@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-
+import { Picker } from '@react-native-picker/picker';
+//
 import {
     SafeAreaView,
     ScrollView,
@@ -151,6 +152,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  pickerContainer: {
+    height: 40, 
+    width: 230, 
+    borderColor: '#4A4A4A', 
+    borderWidth: 1, 
+    borderRadius: 5,  
+    marginBottom: 20, 
+    justifyContent: 'center',
+  },
+
+  picker: {
+    paddingLeft: 8,
+    color: 'black',
+    backgroundColor: 'white',
+  },
+
 });
 
 
@@ -191,8 +208,7 @@ function IssueRow(props) {
       {/****** Q2: Start Coding here. Add Logic to render a row  ******/}
       <View style={styles.table}>
         {row.map((data, index) => (
-          <Text 
-            style={{ ...styles.cell, width: width[index] }}>
+          <Text key={`row-${issue.id}-${index}`} style={[styles.cell, { width: width[index] }]}>
             {data}
           </Text>
         ))}
@@ -228,8 +244,7 @@ function IssueTable(props) {
             <View>
               <View style={styles.table}>
                 {header.map((headline, index) => (
-                  <Text
-                    style={{ ...styles.cell, width: width[index] }}>
+                  <Text key={`header-${index}`} style={[styles.cell, { width: width[index] }]}>
                     {headline}
                   </Text>
                 ))}
@@ -311,6 +326,22 @@ class IssueAdd extends React.Component {
       return (
         <View style={styles.container}>
           <Text style={styles.headline}>New Issue</Text>
+
+          <View style={styles.form}>
+            <Text style={styles.tag}>Status</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={this.state.status}
+                onValueChange={(itemValue) => this.handleInputChange('status', itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="New" value="New" />
+                <Picker.Item label="Assigned" value="Assigned" />
+                <Picker.Item label="Fixed" value="Fixed" />
+              </Picker>
+            </View>
+          </View>
+
           {this.renderFormField('Owner', 'owner')}
           {this.renderFormField('Effort', 'effort', 'numeric')}
           {this.renderFormField('Title', 'title')}
