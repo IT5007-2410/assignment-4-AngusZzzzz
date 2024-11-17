@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 });
 
 
-const width= [40,80,80,80,80,80,200]; // const width = [40, 200, 80, 80, 80, 50, 80];
+const width= [40,80,80,80,80,80,200];
 
 /*
 function IssueRow(props) {
