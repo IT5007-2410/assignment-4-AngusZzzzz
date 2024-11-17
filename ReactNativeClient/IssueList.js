@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { Picker } from '@react-native-picker/picker';
-//
+
 import {
     SafeAreaView,
     ScrollView,
@@ -149,15 +149,12 @@ const styles = StyleSheet.create({
     borderColor: '#4A4A4A', 
     borderWidth: 1, 
     borderRadius: 5,  
-    marginBottom: 20,
+    marginBottom: 10,
   },
 
   pickerContainer: {
     height: 40, 
     width: 230, 
-    borderColor: '#4A4A4A', 
-    borderWidth: 1, 
-    borderRadius: 5,  
     marginBottom: 20, 
     justifyContent: 'center',
   },
@@ -266,8 +263,9 @@ class IssueAdd extends React.Component {
         status: 'New',
         owner: null,
         effort: null,
-        due: null,
+        due: '',
         title: '',
+        isValidDate: true,
       };
       this.handleInputChange = this.handleInputChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -276,14 +274,25 @@ class IssueAdd extends React.Component {
     }
     
     /****** Q3: Start Coding here. Add functions to hold/set state input based on changes in TextInput******/
-    handleInputChange = (key, value) => {
-        this.setState({ [key]: value });
+    handleInputChange = (field, value) => {
+      if (field === 'due') {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        const isValidDate = dateRegex.test(value);
+        this.setState({ due: value, isValidDate });
+      } else {
+        this.setState({ [field]: value });
+      }
     };
     /****** Q3: Code Ends here. ******/
 
     handleSubmit() {
       /****** Q3: Start Coding here. Create an issue from state variables and call createIssue. Also, clear input field in front-end******/
-        const { status, owner, effort, due, title } = this.state;
+        const { status, owner, effort, due, title, isValidDate } = this.state;
+
+        if (!isValidDate || due === '') {
+          Alert.alert('Invalid Date', 'Please enter a valid date in YYYY-MM-DD format.');
+          return;
+        }
 
         const newIssue = {
           status: status,
@@ -299,8 +308,9 @@ class IssueAdd extends React.Component {
           status: 'New',
           owner: null,
           effort: null,
-          due: null,
+          due: '',
           title: '',
+          isValidDate: true,
         });
 
         Alert.alert("Added Successfully");
@@ -323,9 +333,32 @@ class IssueAdd extends React.Component {
     }
 
     render() {
+
       return (
         <View style={styles.container}>
           <Text style={styles.headline}>New Issue</Text>
+
+          <View style={styles.form}>
+            <Text style={styles.tag}>Due Date</Text>
+            <TextInput
+              style={[
+                styles.input,
+                { borderColor: this.state.isValidDate ? 'gray' : 'red' },
+              ]}
+              value={this.state.due}
+              onChangeText={(text) => this.handleInputChange('due', text)}
+              placeholder="YYYY-MM-DD"
+            />
+            {!this.state.isValidDate && (
+              <Text style={{ color: 'red', marginTop: 5 }}>
+                Invalid date format. Please use YYYY-MM-DD.
+              </Text>
+            )}
+          </View>
+
+          {this.renderFormField('Owner', 'owner')}
+          {this.renderFormField('Effort', 'effort', 'numeric')}
+          {this.renderFormField('Title', 'title')}
 
           <View style={styles.form}>
             <Text style={styles.tag}>Status</Text>
@@ -341,10 +374,7 @@ class IssueAdd extends React.Component {
               </Picker>
             </View>
           </View>
-
-          {this.renderFormField('Owner', 'owner')}
-          {this.renderFormField('Effort', 'effort', 'numeric')}
-          {this.renderFormField('Title', 'title')}
+          
           <Button title="Submit" onPress={this.handleSubmit} color='#0033A0' />
         </View>
         /****** Q3: Code Ends here. ******/
